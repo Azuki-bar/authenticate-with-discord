@@ -94,7 +94,10 @@ class Totp(AuthData):
 #         dict = json.dumps(f.read())
 #         dict[token] = token
 if __name__ == '__main__':
-    client = discord.Client()
+    proxy = None
+    if "HTTP_PROXY" in os.environ:
+        proxy = os.environ["HTTP_PROXY"]
+    client = discord.Client(proxy=proxy)
     discord_instance = AuthData("Discord")
     google_instance = Totp("Google")
     if discord_instance.auth_key is None:
@@ -121,7 +124,5 @@ if __name__ == '__main__':
             send_text = google_instance.get_token_string()
             await message.channel.send(send_text)
 
-
-    _ = discord_instance.get_key
 
     client.run(discord_instance.get_key())
