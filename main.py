@@ -56,6 +56,7 @@ class AuthData:
 
         if self.auth_key is None:
             self.set_key()
+        self.auth_key = self.auth_key.replace(" ", "")
         return self.auth_key
 
     def get_key(self):
@@ -119,7 +120,7 @@ if __name__ == '__main__':
 
     google_instance = Totp("Google")
     discord_instance = DiscordService("Discord")
-    
+
     if discord_instance.auth_key is None:
         print("Discord totp is not found")
         print("So start initialized")
@@ -147,5 +148,6 @@ if __name__ == '__main__':
         if message.content == '/google':
             send_text = google_instance.get_token_string()
             await channel.send(send_text)
+
 
     client.run(discord_instance.get_key())
