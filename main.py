@@ -112,10 +112,14 @@ class DiscordService(AuthData):
 #         dict = json.dumps(f.read())
 #         dict[token] = token
 if __name__ == '__main__':
-    client = discord.Client()
-    discord_instance = DiscordService("Discord")
-    google_instance = Totp("Google")
+    proxy = None
+    if "HTTP_PROXY" in os.environ:
+        proxy = os.environ["HTTP_PROXY"]
+    client = discord.Client(proxy=proxy)
 
+    google_instance = Totp("Google")
+    discord_instance = DiscordService("Discord")
+    
     if discord_instance.auth_key is None:
         print("Discord totp is not found")
         print("So start initialized")
@@ -143,6 +147,5 @@ if __name__ == '__main__':
         if message.content == '/google':
             send_text = google_instance.get_token_string()
             await channel.send(send_text)
-
 
     client.run(discord_instance.get_key())
