@@ -2,7 +2,8 @@ import pyotp
 import json
 import discord
 
-available_services = ("Discord", "Google")
+available_services = {"Discord", "Google"}
+send_services = {"Discord"}
 
 
 class ServiceIsNotFound(Exception):
@@ -49,8 +50,30 @@ class AuthData:
             return self.auth_key
 
 
+class Totp(AuthData):
+    def __init__(self, service, file_address='AUTH_DATA'):
+        super(Totp, self).__init__(service, file_address)
+        if service not in available_services - send_services:
+            raise ServiceIsNotFound
 
-# def add_new_discord_token():
+    def first(self):
+        # please write first setting
+        # add_token and return TOTP code
+        self.set_key()
+        self.get_token()
+
+    def get_token(self):
+        key = self.read_key()
+        totp = pyotp.TOTP(key)
+        return totp
+
+    def get_token_string(self):
+        token = self.get_token()
+        str_format = f"{self.service} token is {token}"
+        return str_format
+    # def add_new_discord_token():
+
+
 #     token = input("Please type  discord token >> ").replace(" ", "")
 #     with open("SECRET_DATA", "w") as f:
 #         dict = json.dumps(f.read())
