@@ -79,4 +79,31 @@ class Totp(AuthData):
 #         dict = json.dumps(f.read())
 #         dict[token] = token
 if __name__ == '__main__':
-    pass
+    client = discord.Client()
+    discord_instance = AuthData("Discord")
+    google_instance = Totp("Google")
+    if discord_instance.auth_key is None:
+        print("Discord totp is not found")
+        print("So start initialized")
+        print(discord_instance.set_key())
+
+    if google_instance.auth_key is None:
+        print("Google totp is not found")
+        print("So start initialized")
+        print(google_instance.first())
+
+
+    @client.event
+    async def on_ready():
+        pass
+
+
+    @client.event
+    async def on_message(message):
+        if message.author.bot:
+            return
+        if message.content == '/google':
+            await message.channel.send(google_instance.get_token_string())
+
+
+    client.run(discord_instance.get_key)
