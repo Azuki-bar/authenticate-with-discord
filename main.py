@@ -83,9 +83,9 @@ class Totp(AuthData):
         totp = pyotp.TOTP(key)
         return totp.now()
 
-    def get_token_string(self):
+    def get_token_string(self, message):
         token = self.get_token()
-        str_format = f"{self.service} token is {token}"
+        str_format = f"{message.author.mention} {self.service} token is {token}"
         return str_format
     # def add_new_discord_token():
 
@@ -143,10 +143,11 @@ if __name__ == '__main__':
         channel = client.get_channel(channel_id)
         if channel is None:
             raise TokenIsNotFound('channel_id not found')
+
         if message.author.bot:
             return
         if message.content == '/google':
-            send_text = google_instance.get_token_string()
+            send_text = google_instance.get_token_string(message)
             await channel.send(send_text)
 
 
