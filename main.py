@@ -20,23 +20,34 @@ class AuthData:
 
         self.file_address = file_address
         self.service = service
-        self.token = None
-        self.set_token()
+        self.auth_key = None
+        self.read_key()
 
-    def set_token(self):
-        token = input(f"Please type {self.service} token >> ").replace(" ", "")
-        self.token = token
+    def set_key(self):
+        token = input(f"Please type {self.service} key >> ").replace(" ", "")
+        self.auth_key = token
         with open(self.file_address, "w") as f:
             json_data = json.load(f)
             json_data[self.service] = token
             json.dumps(json_data)
 
-    # @property
-    def get_token(self):
-        if self.token is None:
+    def read_key(self):
+        with open(self.file_address, "r") as f:
+            json_data = json.load(f)
+            try:
+                self.auth_key = json_data[self.service]
+            except KeyError:
+                self.auth_key = None
+        if self.auth_key is None:
+            self.set_key()
+        return self.auth_key
+
+    def get_key(self):
+        if self.auth_key is None:
             raise TokenIsNotFound
         else:
-            return self.token
+            return self.auth_key
+
 
 
 # def add_new_discord_token():
