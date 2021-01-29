@@ -37,7 +37,7 @@ class AuthData:
                 json_data = json.load(f)
             except:
                 pass
-            json_data[self.service] = token
+            json_data[self.service]["Token"] = token
             json.dumps(json_data)
 
     def read_key(self):
@@ -48,7 +48,7 @@ class AuthData:
         with open(self.file_address, "r") as f:
             try:
                 json_data = json.load(f)
-                self.auth_key = json_data[self.service]
+                self.auth_key = json_data[self.service]["Token"]
             except KeyError:
                 self.auth_key = None
             except json.JSONDecodeError:
@@ -89,6 +89,24 @@ class Totp(AuthData):
     # def add_new_discord_token():
 
 
+class DiscordService(AuthData):
+    def __init__(self, service, file_address='AUTH_DATA.json'):
+        super(DiscordService, self).__init__(service, file_address)
+        self.channel_id = None
+
+    def get_channel_id(self):
+        if self.channel_id is None:
+            with open(self.file_address, "r") as f:
+                try:
+                    json_data = json.load(f)
+                    self.channel_id = json_data['Discord']["ChannelID"]
+                except KeyError:
+                    self.channel_id = None
+                except json.JSONDecodeError:
+                    self.channel_id = None
+        return self.channel_id
+
+
 #     token = input("Please type  discord token >> ").replace(" ", "")
 #     with open("SECRET_DATA", "w") as f:
 #         dict = json.dumps(f.read())
@@ -98,8 +116,10 @@ if __name__ == '__main__':
     if "HTTP_PROXY" in os.environ:
         proxy = os.environ["HTTP_PROXY"]
     client = discord.Client(proxy=proxy)
-    discord_instance = AuthData("Discord")
+
     google_instance = Totp("Google")
+    discord_instance = DiscordService("Discord")
+    
     if discord_instance.auth_key is None:
         print("Discord totp is not found")
         print("So start initialized")
@@ -118,11 +138,14 @@ if __name__ == '__main__':
 
     @client.event
     async def on_message(message):
+        channel_id = discord_instance.get_channel_id()
+        channel = client.get_channel(channel_id)
+        if channel is None:
+            raise TokenIsNotFound('channel_id not found')
         if message.author.bot:
             return
         if message.content == '/google':
             send_text = google_instance.get_token_string()
-            await message.channel.send(send_text)
-
+            await channel.send(send_text)
 
     client.run(discord_instance.get_key())
