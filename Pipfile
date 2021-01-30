@@ -7,6 +7,5 @@ verify_ssl = true
 
 [packages]
 pyotp = "*"
+"discord.py" = "*"
 
-[requires]
-python_version = "3.8"
