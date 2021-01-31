@@ -19,3 +19,6 @@
 そうしたら`pipenv install`で必要パッケージをインストールして下さい。
 
 実行は`pipenv run python3 main.py`です。
+
+## LICENSE
+This source code is released under MIT license.
