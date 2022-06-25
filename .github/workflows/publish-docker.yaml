@@ -1,0 +1,32 @@
+name: Publish Docker image
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: set tag
+        run: |-
+          export TIMESTUMP=$(date +%s)
+          export SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          echo "IMAGE_TAG=$SHA-$TIMESTUMP" >> $GITHUB_ENV
+      - name: Build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/azuki-bar/authenticate-with-discord:${{ env.IMAGE_TAG }}
