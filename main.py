@@ -18,6 +18,7 @@ class TokenIsNotFound(Exception):
 
 
 class AuthData:
+
     def __init__(self, service, file_address='AUTH_DATA.json'):
         if service not in available_services:
             raise ServiceIsNotFound(f"not found service name is {service}")
@@ -67,6 +68,7 @@ class AuthData:
 
 
 class Totp(AuthData):
+
     def __init__(self, service, file_address='AUTH_DATA.json'):
         super(Totp, self).__init__(service, file_address)
         if service not in available_services - send_services:
@@ -87,10 +89,12 @@ class Totp(AuthData):
         token = self.get_token()
         str_format = f"{message.author.mention} {self.service} token is {token}"
         return str_format
+
     # def add_new_discord_token():
 
 
 class DiscordService(AuthData):
+
     def __init__(self, service, file_address='AUTH_DATA.json'):
         super(DiscordService, self).__init__(service, file_address)
         self.channel_id = None
@@ -118,8 +122,9 @@ if __name__ == '__main__':
         proxy = os.environ["HTTP_PROXY"]
     client = discord.Client(proxy=proxy)
 
-    google_instance = Totp("Google")
-    discord_instance = DiscordService("Discord")
+    google_instance = Totp("Google", file_address="AUTH_DATA/AUTH_DATA.json")
+    discord_instance = DiscordService("Discord",
+                                      file_address="AUTH_DATA/AUTH_DATA.json")
 
     if discord_instance.auth_key is None:
         print("Discord totp is not found")
@@ -131,11 +136,9 @@ if __name__ == '__main__':
         print("So start initialized")
         print(google_instance.first())
 
-
     @client.event
     async def on_ready():
         print("login success")
-
 
     @client.event
     async def on_message(message):
@@ -149,6 +152,5 @@ if __name__ == '__main__':
         if message.content == '/google':
             send_text = google_instance.get_token_string(message)
             await channel.send(send_text)
-
 
     client.run(discord_instance.get_key())
