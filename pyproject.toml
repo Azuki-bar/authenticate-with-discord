@@ -7,7 +7,7 @@ authors = ["Azuki-bar <mail@azukibar.dev>"]
 [tool.poetry.dependencies]
 python = "^3.10"
 pyotp = "^2.6"
-"discord.py"= "^1.7.3"
+"discord.py"= "^2.0.0"
 [tool.poetry.dev-dependencies]
 
 [build-system]
