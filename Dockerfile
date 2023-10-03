@@ -1,4 +1,4 @@
-FROM python:3.10-slim as base
+FROM python:3.12-slim as base
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
